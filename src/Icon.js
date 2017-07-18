@@ -10,6 +10,7 @@ const iconOptions = {
   prefix: 'fa',
   spinClass: 'fa-spin',
   extraIconClasses: '',
+  fillClasses: '',
   extraDivClasses: '',
   icon: 'home',
   markerColor: 'blue',
@@ -31,10 +32,14 @@ export default class Icon extends Leaflet.Icon {
     const options = this.options
     const pin_path = options.map_pin || mapPin
 
-    div.innerHTML = `<svg width="${options.iconSize[0]}px" height="${options.iconSize[1]}px" viewBox="${options.viewBox}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="${pin_path}" fill="${options.markerColor}"></path></svg>`
+    if (options.fillClasses.length > 0) {
+      div.innerHTML = `<svg width="${options.iconSize[0]}px" height="${options.iconSize[1]}px" viewBox="${options.viewBox}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="${pin_path}" class="${options.fillClasses}"></path></svg>`
+    } else {
+      div.innerHTML = `<svg width="${options.iconSize[0]}px" height="${options.iconSize[1]}px" viewBox="${options.viewBox}" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="${pin_path}" fill="${options.markerColor}"></path></svg>`
+    }
 
-    if (options.icon) {
-      div.appendChild(this._createInner())
+    if (options.innerHTML) {
+      div.appendChild(options.innerHTML);
     }
 
     options.className += options.className.length > 0 ? ' ' + options.extraDivClasses : options.extraDivClasses
@@ -50,32 +55,46 @@ export default class Icon extends Leaflet.Icon {
   }
 
   _createInner() {
-    const i = document.createElement('i')
+
     const options = this.options
 
-    i.classList.add(options.prefix)
-    if (options.extraClasses) {
-      i.classList.add(options.extraClasses)
-    }
-    if (options.prefix) {
-      i.classList.add(options.prefix + '-' + options.icon)
+    if (options.innerHTML) {
+      const div = document.createElement('div');
+
+      div.innerHTML = options.innerHTML
+
+      return div;
     } else {
-      i.classList.add(options.icon)
-    }
-    if (options.spin && typeof options.spinClass === 'string') {
-      i.classList.add(options.spinClass)
-    }
-    if (options.iconColor) {
-      if (options.iconColor === 'white' || options.iconColor === 'black') {
-        i.classList.add('icon-' + options.iconColor)
-      } else {
-        i.style.color = options.iconColor
+      const i = document.createElement('i')
+      i.classList.add(options.prefix)
+      if (options.extraClasses) {
+        i.classList.add(options.extraClasses)
       }
+      if (options.prefix) {
+        if (options.icon.indexOf(options.prefix) === - 1) {
+          i.classList.add(options.prefix + '-' + options.icon)
+        } else {
+          i.classList.add(options.icon)
+        }
+      } else {
+        i.classList.add(options.icon)
+      }
+      if (options.spin && typeof options.spinClass === 'string') {
+        i.classList.add(options.spinClass)
+      }
+      if (options.iconColor) {
+        if (options.iconColor === 'white' || options.iconColor === 'black') {
+          i.classList.add('icon-' + options.iconColor)
+        } else {
+          i.style.color = options.iconColor
+        }
+      }
+      if (options.iconSize) {
+        i.style.width = options.iconSize[0] + 'px'
+      }
+      return i
     }
-    if (options.iconSize) {
-      i.style.width = options.iconSize[0] + 'px'
-    }
-    return i
+
   }
 
   _setIconStyles(img, name) {

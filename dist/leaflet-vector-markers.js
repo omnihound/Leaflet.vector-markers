@@ -52,7 +52,7 @@ return /******/ (function(modules) { // webpackBootstrap
 /************************************************************************/
 /******/ ([
 /* 0 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -81,15 +81,15 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	_leaflet2.default.VectorMarkers = _VectorMarkers3.default;
 
-/***/ },
+/***/ }),
 /* 1 */
-/***/ function(module, exports) {
+/***/ (function(module, exports) {
 
 	module.exports = __WEBPACK_EXTERNAL_MODULE_1__;
 
-/***/ },
+/***/ }),
 /* 2 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -113,9 +113,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 	};
 
-/***/ },
+/***/ }),
 /* 3 */
-/***/ function(module, exports, __webpack_require__) {
+/***/ (function(module, exports, __webpack_require__) {
 
 	'use strict';
 
@@ -147,6 +147,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  prefix: 'fa',
 	  spinClass: 'fa-spin',
 	  extraIconClasses: '',
+	  fillClasses: '',
 	  extraDivClasses: '',
 	  icon: 'home',
 	  markerColor: 'blue',
@@ -162,7 +163,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function Icon(options) {
 	    _classCallCheck(this, Icon);
 
-	    var _this = _possibleConstructorReturn(this, Object.getPrototypeOf(Icon).call(this, options));
+	    var _this = _possibleConstructorReturn(this, (Icon.__proto__ || Object.getPrototypeOf(Icon)).call(this, options));
 
 	    _leaflet2.default.Util.setOptions(_this, iconOptions);
 	    _leaflet2.default.Util.setOptions(_this, options);
@@ -176,10 +177,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var options = this.options;
 	      var pin_path = options.map_pin || mapPin;
 
-	      div.innerHTML = '<svg width="' + options.iconSize[0] + 'px" height="' + options.iconSize[1] + 'px" viewBox="' + options.viewBox + '" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="' + pin_path + '" fill="' + options.markerColor + '"></path></svg>';
+	      if (options.fillClasses.length > 0) {
+	        div.innerHTML = '<svg width="' + options.iconSize[0] + 'px" height="' + options.iconSize[1] + 'px" viewBox="' + options.viewBox + '" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="' + pin_path + '" class="' + options.fillClasses + '"></path></svg>';
+	      } else {
+	        div.innerHTML = '<svg width="' + options.iconSize[0] + 'px" height="' + options.iconSize[1] + 'px" viewBox="' + options.viewBox + '" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><path d="' + pin_path + '" fill="' + options.markerColor + '"></path></svg>';
+	      }
 
-	      if (options.icon) {
-	        div.appendChild(this._createInner());
+	      if (options.innerHTML) {
+	        div.appendChild(options.innerHTML);
 	      }
 
 	      options.className += options.className.length > 0 ? ' ' + options.extraDivClasses : options.extraDivClasses;
@@ -197,32 +202,45 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }, {
 	    key: '_createInner',
 	    value: function _createInner() {
-	      var i = document.createElement('i');
+
 	      var options = this.options;
 
-	      i.classList.add(options.prefix);
-	      if (options.extraClasses) {
-	        i.classList.add(options.extraClasses);
-	      }
-	      if (options.icon.slice(0, options.prefix.length + 1) === options.prefix + '-') {
-	        i.classList.add(options.icon);
+	      if (options.innerHTML) {
+	        var div = document.createElement('div');
+
+	        div.innerHTML = options.innerHTML;
+
+	        return div;
 	      } else {
-	        i.classList.add(options.prefix + '-' + options.icon);
-	      }
-	      if (options.spin && typeof options.spinClass === 'string') {
-	        i.classList.add(options.spinClass);
-	      }
-	      if (options.iconColor) {
-	        if (options.iconColor === 'white' || options.iconColor === 'black') {
-	          i.classList.add('icon-' + options.iconColor);
-	        } else {
-	          i.style.color = options.iconColor;
+	        var i = document.createElement('i');
+	        i.classList.add(options.prefix);
+	        if (options.extraClasses) {
+	          i.classList.add(options.extraClasses);
 	        }
+	        if (options.prefix) {
+	          if (options.icon.indexOf(options.prefix) === -1) {
+	            i.classList.add(options.prefix + '-' + options.icon);
+	          } else {
+	            i.classList.add(options.icon);
+	          }
+	        } else {
+	          i.classList.add(options.icon);
+	        }
+	        if (options.spin && typeof options.spinClass === 'string') {
+	          i.classList.add(options.spinClass);
+	        }
+	        if (options.iconColor) {
+	          if (options.iconColor === 'white' || options.iconColor === 'black') {
+	            i.classList.add('icon-' + options.iconColor);
+	          } else {
+	            i.style.color = options.iconColor;
+	          }
+	        }
+	        if (options.iconSize) {
+	          i.style.width = options.iconSize[0] + 'px';
+	        }
+	        return i;
 	      }
-	      if (options.iconSize) {
-	        i.style.width = options.iconSize[0] + 'px';
-	      }
-	      return i;
 	    }
 	  }, {
 	    key: '_setIconStyles',
@@ -256,7 +274,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	exports.default = Icon;
 
-/***/ }
+/***/ })
 /******/ ])
 });
 ;
